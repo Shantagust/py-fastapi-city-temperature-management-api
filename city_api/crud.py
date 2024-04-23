@@ -1,39 +1,30 @@
-from sqlalchemy import select, insert
-from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.orm import Session
 
 from . import models, schemas
 
 
-async def get_all_cities(db: AsyncSession):
-    query = select(models.City)
-    cities = await db.execute(query)
-    return [city[0] for city in cities.fetchall()]
+def get_cities(db: Session):
+    return db.query(models.City).all()
 
 
-async def get_city_by_id(db: AsyncSession, city_id: int):
-    query = select(models.City).where(models.City.id == city_id)
-    result = await db.execute(query)
-    city = result.first()
-    if city:
-        return city[0]
-    return {"message": "city with this id not found !"}
+def get_city_by_id(db: Session, city_id: int):
+    city = db.query(models.City).filter(models.City.id == city_id).first()
+    return city if city else {"message": "city with this id not found !"}
 
 
-async def create_city(db: AsyncSession, city: schemas.CityIn):
-    query = insert(models.City).values(city.dict())
-    result = await db.execute(query)
-    await db.commit()
-    resp = {**city.model_dump(), "id": result.lastrowid}
-    return resp
+def create_city(db: Session, city: schemas.CityIn):
+    city = models.City(**city.dict())
+    db.add(city)
+    db.commit()
+    db.refresh(city)
+    return city
 
 
-async def delete_city_by_id(db: AsyncSession, city_id: int):
-    query = select(models.City).where(models.City.id == city_id)
-    result = await db.execute(query)
-    city = result.scalar()
+def delete_city_by_id(db: Session, city_id: int):
+    city = (db.query(models.City).filter(models.City.id == city_id).first())
 
     if city is not None:
-        await db.delete(city)
-        await db.commit()
+        db.delete(city)
+        db.commit()
         return {"message": "city deleted"}
     return {"message": "city not found"}

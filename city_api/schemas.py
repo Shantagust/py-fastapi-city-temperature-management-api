@@ -10,8 +10,3 @@ class CityBase(BaseModel):
 class CityIn(BaseModel):
     name: str
     additional: str
-
-
-class CityUpdate(CityBase):
-    name: str
-    additional: str
