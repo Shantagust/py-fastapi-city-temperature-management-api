@@ -27,7 +27,10 @@ async def update_temperature_database(db: Session = Depends(get_db)):
             for city in cities:
                 kwargs = {"key": os.getenv("APIKEY"), "q": city.name}
                 try:
-                    response = await client.get(os.getenv("URL"), params=kwargs)
+                    response = await client.get(
+                        os.getenv("URL"),
+                        params=kwargs
+                    )
                     response.raise_for_status()
                     data = response.json()
                     temperature = data["current"]["temp_c"]

@@ -19,7 +19,10 @@ def update_city_temperature(
     if city_data:
         city_data.temperature = temperature
     else:
-        city_data = models.Temperature(city_id=city_id, temperature=temperature)
+        city_data = models.Temperature(
+            city_id=city_id,
+            temperature=temperature
+        )
         db.add(city_data)
     db.commit()
     db.refresh(city_data)
