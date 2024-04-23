@@ -9,6 +9,7 @@
 download project from git: 
 
 put in console : 
+
 `git clone https://github.com/Shantagust/py-fastapi-city-temperature-management-api.git`
 
 ### Config project:
